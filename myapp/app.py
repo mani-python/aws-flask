@@ -1,38 +1,74 @@
-from flask import Flask,render_template,url_for,redirect,request
+import dash
+from dash.dependencies import Input, Output
+import dash_core_components as dcc
+import dash_html_components as html
+import dash_table_experiments as dt
+import pandas as pd
+import flask
 
-app = Flask(__name__)
+app = dash.Dash(__name__)
+server = app.server
 
-@app.route('/')
-def index():
-  return "index page"
+# app.scripts.config.serve_locally = True
+# app.css.config.serve_locally = True
+
+DF_GAPMINDER = pd.read_csv(
+    'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv',error_bad_lines=False)
+DF_GAPMINDER = DF_GAPMINDER[DF_GAPMINDER['year'] == 2007]
+DF_GAPMINDER.loc[0:20]
+
+DF_SIMPLE = pd.DataFrame({
+    'x': ['A', 'B', 'C', 'D', 'E', 'F'],
+    'y': [4, 3, 1, 2, 3, 6],
+    'z': ['a', 'b', 'c', 'a', 'b', 'c']
+})
 
 
-@app.route('/login', methods=['POST', 'GET'])
-def login():
-   error = None
-   if request.method == 'POST':
-        if valid_login(request.form['username'],request.form['password']):
-           return redirect(url_for('welcome', username=request.form.get('username')))
-        else:
-           error = "Incorrect username and password"
-   return render_template('login.html',error=error)
+dataframes = {'DF_GAPMINDER': DF_GAPMINDER,
+              'DF_SIMPLE': DF_SIMPLE}
 
 
-@app.route('/welcome/<username>')
-def welcome(username):
-       return render_template('welcome.html',username=username)
+def get_data_object(user_selection):
+    '''
+    For user selections, return the relevant in-memory data frame.
+    '''
+    return dataframes[user_selection]
 
-       
-def valid_login(username, password):
-    if username == password:
-        return True
-    else:
-        return False
 
-@app.route('/error')
-def errorpage():
-	return render_template('error.html')
+app.layout = html.Div([
+    html.H4('DataTable'),
+    html.Label('Report type:', style={'font-weight': 'bold'}),
+    dcc.Dropdown(
+        id='field-dropdown',
+        options=[{'label': df, 'value': df} for df in dataframes],
+        value='DF_GAPMINDER',
+        #clearable=False
+    ),
+    dt.DataTable(
+        # Initialise the rows
+        rows=[{}],
+        row_selectable=True,
+        filterable=True,
+        sortable=True,
+        selected_row_indices=[],
+        id='table'
+    ),
+    html.Div(id='selected-indexes')
+], className="container")
 
+
+@app.callback(Output('table', 'rows'), [Input('field-dropdown', 'value')])
+def update_table(user_selection):
+    '''
+    For user selections, return the relevant table
+    '''
+    df = get_data_object(user_selection)
+    return df.to_dict('records')
+
+
+app.css.append_css({
+    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
+})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run_server(debug=True)
