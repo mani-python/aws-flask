@@ -14,16 +14,12 @@ server = app.server
 shieldstatus = pd.read_csv(
     'https://raw.githubusercontent.com/mani-python/aws-flask/master/shieldstatus.csv',error_bad_lines=False)
 
-
-DF_SIMPLE = pd.DataFrame({
-    'x': ['A', 'B', 'C', 'D', 'E', 'F'],
-    'y': [4, 3, 1, 2, 3, 6],
-    'z': ['a', 'b', 'c', 'a', 'b', 'c']
-})
+albstatus = pd.read_csv(
+    'https://raw.githubusercontent.com/mani-python/aws-flask/master/ALBstatus.csv',error_bad_lines=False)
 
 
 dataframes = {'shieldstatus': shieldstatus,
-              'DF_SIMPLE': DF_SIMPLE}
+              'ALB Status': albstatus}
 
 
 def get_data_object(user_selection):
