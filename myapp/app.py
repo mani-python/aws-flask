@@ -11,11 +11,9 @@ server = app.server
 
 # app.scripts.config.serve_locally = True
 # app.css.config.serve_locally = True
+shieldstatus = pd.read_csv(
+    'https://raw.githubusercontent.com/mani-python/aws-flask/master/shieldstatus.csv',error_bad_lines=False)
 
-DF_GAPMINDER = pd.read_csv(
-    'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv',error_bad_lines=False)
-DF_GAPMINDER = DF_GAPMINDER[DF_GAPMINDER['year'] == 2007]
-DF_GAPMINDER.loc[0:20]
 
 DF_SIMPLE = pd.DataFrame({
     'x': ['A', 'B', 'C', 'D', 'E', 'F'],
@@ -24,7 +22,7 @@ DF_SIMPLE = pd.DataFrame({
 })
 
 
-dataframes = {'DF_GAPMINDER': DF_GAPMINDER,
+dataframes = {'shieldstatus': shieldstatus,
               'DF_SIMPLE': DF_SIMPLE}
 
 
@@ -41,7 +39,7 @@ app.layout = html.Div([
     dcc.Dropdown(
         id='field-dropdown',
         options=[{'label': df, 'value': df} for df in dataframes],
-        value='DF_GAPMINDER',
+        value='shieldstatus',
         #clearable=False
     ),
     dt.DataTable(
