@@ -1,10 +1,10 @@
-from flask import Flask,render_template,url_for,redirect
+from flask import Flask,render_template,url_for,redirect,request
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-        return "index page"
+  return "index page"
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -21,13 +21,15 @@ def login():
 @app.route('/welcome/<username>')
 def welcome(username):
        return render_template('welcome.html',username=username)
+
+       
 def valid_login(username, password):
     if username == password:
         return True
     else:
         return False
 
-@app.route('/errorpage')
+@app.route('/error')
 def errorpage():
 	return render_template('error.html')
 
