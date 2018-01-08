@@ -14,12 +14,12 @@ server = app.server
 shieldstatus = pd.read_csv(
     'https://raw.githubusercontent.com/mani-python/aws-flask/master/shieldstatus.csv',error_bad_lines=False)
 
-albstatus = pd.read_csv(
+
+ALBstatus = pd.read_csv(
     'https://raw.githubusercontent.com/mani-python/aws-flask/master/ALBstatus.csv',error_bad_lines=False)
 
-
 dataframes = {'shieldstatus': shieldstatus,
-              'ALB Status': albstatus}
+              'Alb status': ALBstatus}
 
 
 def get_data_object(user_selection):
@@ -28,9 +28,13 @@ def get_data_object(user_selection):
     '''
     return dataframes[user_selection]
 
+colors = {
+    'background': '#000000',
+    'text': '#7FDBFF'
+}
 
 app.layout = html.Div([
-    html.H4('DataTable'),
+    html.H4('Waf and Shield Status'),
     html.Label('Report type:', style={'font-weight': 'bold'}),
     dcc.Dropdown(
         id='field-dropdown',
@@ -66,3 +70,4 @@ app.css.append_css({
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
